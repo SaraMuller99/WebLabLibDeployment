@@ -9,7 +9,7 @@ function turnOff(number) {
 }
 
 function turnLight(num, state) {
-    var url = LIGHT_URL.replace("LIGHT", num) + "?state=" + state;
+    var url = LIGHT_URL.replace("%s", num) + "?state=" + state;
     $.get(url).done(parseStatus);
 }
 

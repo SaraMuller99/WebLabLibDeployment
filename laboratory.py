@@ -38,7 +38,7 @@ def poll():
     poll()
     return jsonify(result='ok')
 
-@app.route('/lights/<number>/')
+@app.route('/lights/<int:number>/')
 @requires_active
 def light(number):
     state = request.args.get('state') == 'true'
