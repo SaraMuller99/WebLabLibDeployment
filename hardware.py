@@ -1,44 +1,60 @@
 import os
 import json
-import RPi.GPIO as GPIO  # Importing the library to control GPIO
+import RPi.GPIO as GPIO  # Librería para GPIO
 from laboratory import weblab
 from weblablib import weblab_user
 
-# Set up GPIO for Raspberry Pi
-GPIO.setmode(GPIO.BCM)  # Using BCM numbering
-GPIO.setup(17, GPIO.OUT)  # Set GPIO17 as an output
+# Configuración de los GPIO
+GPIO.setmode(GPIO.BCM)  # numeracion BCM
+GPIO.setup(17, GPIO.OUT)  # GPIO17 como salida
 
 @weblab.on_start
 def start(client_data, server_data):
-    print("Initializing {}".format(weblab_user))
+    print("Initializing session for {}".format(weblab_user))
+
+    # Se repite para evitar que un usuario herede el estado de otro
+    GPIO.setmode(GPIO.BCM)
+    GPIO.setup(17, GPIO.OUT)
+    
+    # Pin a 0 al inicio de la sesión
+    GPIO.output(17, GPIO.LOW)
+
 
 @weblab.on_dispose
 def dispose():
-    print("Disposing {}".format(weblab_user))
+    print("Disposing session for {}".format(weblab_user))
     clean_resources()
+    
+    # Limpiamos los GPIO cuando Flask se cierra
+    GPIO.cleanup()
 
 def clean_resources():
-    """Turns off all lights and cleans up GPIO resources"""
+    print("Cleaning up resources and turning off all lights")
+    
+    # Apagar las luces 
     for n in range(1, 11):
         switch_light(n, False)
-    GPIO.cleanup()  # Release GPIO pins
+
+    # Reiniciar el lights.json
+    if os.path.exists('lights.json'):
+        os.remove('lights.json')
 
 def switch_light(number, state):
-    """Turns a specific light on or off and controls GPIO17 if it's light 1"""
+    """Turns a specific light on or off and updates the hardware state"""
+
+    # Leer estado actual de las luces
     if not os.path.exists('lights.json'):
-        lights = {"light-{}".format(n): False for n in range(1, 11)}
+        lights = { 'light-{}'.format(n): False for n in range(1, 11) }
     else:
-        with open('lights.json', 'r') as file:
-            lights = json.load(file)
-    
-    lights["light-{}".format(number)] = state
-    
-    with open('lights.json', 'w') as file:
-        json.dump(lights, file, indent=4)
-    
-    # Control GPIO17 if light 1 is toggled
+        lights = json.load(open('lights.json'))
+
+    # Actualizar estado de las luces
+    lights['light-{}'.format(number)] = state
+    json.dump(lights, open('lights.json', 'w'), indent=4)
+
+    # Si la luz 1 es la que cambia, actualizar GPIO17
     if number == 1:
-        GPIO.output(17, state)
+        GPIO.output(17, GPIO.HIGH if state else GPIO.LOW)
 
 def is_light_on(number):
     """Checks whether a light is on or off"""
