@@ -1,12 +1,32 @@
 import os
 import json
-import RPi.GPIO as GPIO  # Librería para GPIO
+import RPi.GPIO as GPIO  # Libreria para GPIO
 from laboratory import weblab
 from weblablib import weblab_user
 
-# Configuración de los GPIO
+#Mapa de los GPIO
+mapa = {
+    1: 2,
+    2: 3,
+    3: 4,
+    4: 17,
+    5: 27,
+    6: 22,
+    7: 10,
+    8: 9
+}
+
+# Configuracion de los GPIO
 GPIO.setmode(GPIO.BCM)  # numeracion BCM
-GPIO.setup(17, GPIO.OUT)  # GPIO17 como salida
+#Establecer pines como salida
+GPIO.setup(2, GPIO.OUT)
+GPIO.setup(3, GPIO.OUT)
+GPIO.setup(4, GPIO.OUT)
+GPIO.setup(17, GPIO.OUT)
+GPIO.setup(27, GPIO.OUT)
+GPIO.setup(22, GPIO.OUT)
+GPIO.setup(10, GPIO.OUT)
+GPIO.setup(9, GPIO.OUT)
 
 @weblab.on_start
 def start(client_data, server_data):
@@ -14,10 +34,25 @@ def start(client_data, server_data):
 
     # Se repite para evitar que un usuario herede el estado de otro
     GPIO.setmode(GPIO.BCM)
-    GPIO.setup(17, GPIO.OUT)
     
-    # Pin a 0 al inicio de la sesión
-    GPIO.output(17, GPIO.LOW)
+    GPIO.setup(2, GPIO.OUT)
+    GPIO.setup(3, GPIO.OUT)
+    GPIO.setup(4, GPIO.OUT)
+    GPIO.setup(17, GPIO.OUT)
+    GPIO.setup(27, GPIO.OUT)
+    GPIO.setup(22, GPIO.OUT)
+    GPIO.setup(10, GPIO.OUT)
+    GPIO.setup(9, GPIO.OUT)
+    
+    # Pin a 0 al inicio de la sesion
+    GPIO.setup(2, GPIO.LOW)
+    GPIO.setup(3, GPIO.LOW)
+    GPIO.setup(4, GPIO.LOW)
+    GPIO.setup(17, GPIO.LOW)
+    GPIO.setup(27, GPIO.LOW)
+    GPIO.setup(22, GPIO.LOW)
+    GPIO.setup(10, GPIO.LOW)
+    GPIO.setup(9, GPIO.LOW)
 
 
 @weblab.on_dispose
@@ -52,9 +87,12 @@ def switch_light(number, state):
     lights['light-{}'.format(number)] = state
     json.dump(lights, open('lights.json', 'w'), indent=4)
 
-    # Si la luz 1 es la que cambia, actualizar GPIO17
-    if number == 1:
-        GPIO.output(17, GPIO.HIGH if state else GPIO.LOW)
+    # Buscar en el mapa el GPIO correspondiente
+    gpio_number = mapa.get(number, "invalid")
+    if (gpio_number != "invalid"):
+        GPIO.output(gpio_number, GPIO.HIGH if state else GPIO.LOW)
+    else: 
+        print("Light " + str(number) +" not GPIO mapped")
 
 def is_light_on(number):
     """Checks whether a light is on or off"""
