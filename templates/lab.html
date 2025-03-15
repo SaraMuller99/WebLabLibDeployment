@@ -37,13 +37,13 @@
           <div class="row">
             {% for light in range(1, 11) %}
             <div class="col-sm-1 text-center">
-              Light {{ light }}
+              Switch {{ light }}
               <br>
               <a href="javascript:turnOff({{ light }})">
-                <img width="50px" id="light_{{ light }}_on" src="https://files.labsland.com/pub/docs/weblablib/light-on.png">
+                <img width="50px" id="light_{{ light }}_on" src="{{ url_for('static', filename='imagenes/on.png') }}">
               </a>
               <a href="javascript:turnOn({{ light }})">
-                <img width="50px" id="light_{{ light }}_off" src="https://files.labsland.com/pub/docs/weblablib/light-off.png">
+                <img width="50px" id="light_{{ light }}_off" src="{{ url_for('static', filename='imagenes/off.png') }}">
               </a>
             </div>
             {% endfor %}
