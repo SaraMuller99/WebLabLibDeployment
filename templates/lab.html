@@ -20,35 +20,52 @@
 
     <div class="container">
       <div class="row">
-        <h1>Welcome to our new<strong>FPGA's lab</strong>!</h1>
+        <h1>Bienvenido a la fase beta del <strong>nuevo laboratorio de FPGA's</strong>!</h1>
       </div>
 
       <div class="row">
-        <p>This is a first try laboratory using <a href="https://developers.labsland.com/weblablib/">weblablib</a>.</p>
-          <p>Time: <span id="timer"></span>.
-        </div>
-        <br><br>
+        <h2>Switches: Pulsa los switches para cambiar el estado de los interruptores de la FPGA</h2>
+      </div>
+      <br>
+      
+      <!-- Temporizador -->
+      <div class="row">
+        <p>Time: <span id="timer"></span>.</p>
+      </div>
+      <br>
+      
 
-        <div id="panel">
-          <div class="row">
-              <h2>Lights: click on each light to change status of a real led</h2>
-          </div>
+      <!-- Primera fila: interruptores 0-7 -->
+      <div class="row">
+        {% for light in range(0, 8) %}
+        <div class="col-sm-1 text-center">
+          sw{{ light }}
           <br>
-          <div class="row">
-            {% for light in range(1, 11) %}
-            <div class="col-sm-1 text-center">
-              Switch {{ light }}
-              <br>
-              <a href="javascript:turnOff({{ light }})">
-                <img width="50px" id="light_{{ light }}_on" src="{{ url_for('static', filename='imagenes/on.png') }}">
-              </a>
-              <a href="javascript:turnOn({{ light }})">
-                <img width="50px" id="light_{{ light }}_off" src="{{ url_for('static', filename='imagenes/off.png') }}">
-              </a>
-            </div>
-            {% endfor %}
-          </div>
+          <a href="javascript:turnOff({{ light }})">
+            <img width="50px" id="light_{{ light }}_on" src="{{ url_for('static', filename='imagenes/on.png') }}">
+          </a>
+          <a href="javascript:turnOn({{ light }})">
+            <img width="50px" id="light_{{ light }}_off" src="{{ url_for('static', filename='imagenes/off.png') }}">
+          </a>
         </div>
+        {% endfor %}
+      </div>
+      <br>
+      
+      <!-- Segunda fila: interruptores 8-15 -->
+      <div class="row">
+        {% for light in range(8, 16) %}
+        <div class="col-sm-1 text-center">
+          sw{{ light }}
+          <br>
+          <a href="javascript:turnOff({{ light }})">
+            <img width="50px" id="light_{{ light }}_on" src="{{ url_for('static', filename='imagenes/on.png') }}">
+          </a>
+          <a href="javascript:turnOn({{ light }})">
+            <img width="50px" id="light_{{ light }}_off" src="{{ url_for('static', filename='imagenes/off.png') }}">
+          </a>
+        </div>
+        {% endfor %}
       </div>
 <!-- - -->
     {% if not weblab_user.active %}
@@ -72,7 +89,7 @@
     <!-- Here we will have the scripts -->
     <script>
       var STATUS_URL = "{{ url_for('status') }}";
-      var LIGHT_URL = "{{ url_for('light', number=1) }}".replace("1", "%s");
+      var LIGHT_URL = "{{ url_for('light', number=1) }}".replace("1", "%s"); 
     </script>
     <script src="{{ url_for('static', filename='lab.js') }}"></script>
 

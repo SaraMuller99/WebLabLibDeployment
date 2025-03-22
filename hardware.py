@@ -13,7 +13,15 @@ mapa = {
     5: 27,
     6: 22,
     7: 10,
-    8: 9
+    8: 9,
+    9: 14,
+    10: 15,
+    11: 18,
+    12: 23,
+    13: 24,
+    14: 25,
+    15: 8,
+    16: 7
 }
 
 # Configuracion de los GPIO
@@ -27,6 +35,14 @@ GPIO.setup(27, GPIO.OUT)
 GPIO.setup(22, GPIO.OUT)
 GPIO.setup(10, GPIO.OUT)
 GPIO.setup(9, GPIO.OUT)
+GPIO.setup(14, GPIO.OUT)
+GPIO.setup(15, GPIO.OUT)
+GPIO.setup(18, GPIO.OUT)
+GPIO.setup(23, GPIO.OUT)
+GPIO.setup(24, GPIO.OUT)
+GPIO.setup(25, GPIO.OUT)
+GPIO.setup(8, GPIO.OUT)
+GPIO.setup(7, GPIO.OUT)
 
 @weblab.on_start
 def start(client_data, server_data):
@@ -43,6 +59,14 @@ def start(client_data, server_data):
     GPIO.setup(22, GPIO.OUT)
     GPIO.setup(10, GPIO.OUT)
     GPIO.setup(9, GPIO.OUT)
+    GPIO.setup(14, GPIO.OUT)
+    GPIO.setup(15, GPIO.OUT)
+    GPIO.setup(18, GPIO.OUT)
+    GPIO.setup(23, GPIO.OUT)
+    GPIO.setup(24, GPIO.OUT)
+    GPIO.setup(25, GPIO.OUT)
+    GPIO.setup(8, GPIO.OUT)
+    GPIO.setup(7, GPIO.OUT)
     
     # Pin a 0 al inicio de la sesion
     GPIO.setup(2, GPIO.LOW)
@@ -53,6 +77,14 @@ def start(client_data, server_data):
     GPIO.setup(22, GPIO.LOW)
     GPIO.setup(10, GPIO.LOW)
     GPIO.setup(9, GPIO.LOW)
+    GPIO.setup(14, GPIO.LOW)
+    GPIO.setup(15, GPIO.LOW)
+    GPIO.setup(18, GPIO.LOW)
+    GPIO.setup(23, GPIO.LOW)
+    GPIO.setup(24, GPIO.LOW)
+    GPIO.setup(25, GPIO.LOW)
+    GPIO.setup(8, GPIO.LOW)
+    GPIO.setup(7, GPIO.LOW)
 
 
 @weblab.on_dispose
@@ -67,7 +99,7 @@ def clean_resources():
     print("Cleaning up resources and turning off all lights")
     
     # Apagar las luces 
-    for n in range(1, 11):
+    for n in range(1, 17):
         switch_light(n, False)
 
     # Reiniciar el lights.json
@@ -79,7 +111,7 @@ def switch_light(number, state):
 
     # Leer estado actual de las luces
     if not os.path.exists('lights.json'):
-        lights = { 'light-{}'.format(n): False for n in range(1, 11) }
+        lights = { 'light-{}'.format(n): False for n in range(1, 17) }
     else:
         lights = json.load(open('lights.json'))
 
