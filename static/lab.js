@@ -22,7 +22,7 @@ function clean() {
 
 function parseStatus(newStatus) {
     if (newStatus.error == false) {
-        for (var i = 0; i < 16; i++) {
+        for (var i = 0; i < 16; i++) { 
             if(newStatus.lights["light-" + i]) {
                 $("#light_" + i + "_off").hide();
                 $("#light_" + i + "_on").show();

@@ -6,22 +6,22 @@ from weblablib import weblab_user
 
 #Mapa de los GPIO
 mapa = {
-    1: 2,
-    2: 3,
-    3: 4,
-    4: 17,
-    5: 27,
-    6: 22,
-    7: 10,
-    8: 9,
-    9: 14,
-    10: 15,
-    11: 18,
-    12: 23,
-    13: 24,
-    14: 25,
-    15: 8,
-    16: 7
+    0: 2,
+    1: 3,
+    2: 4,
+    3: 17,
+    4: 27,
+    5: 22,
+    6: 10,
+    7: 9,
+    8: 14,
+    9: 15,
+    10: 18,
+    11: 23,
+    12: 24,
+    13: 25,
+    14: 8,
+    15: 7
 }
 
 # Configuracion de los GPIO
@@ -99,7 +99,7 @@ def clean_resources():
     print("Cleaning up resources and turning off all lights")
     
     # Apagar las luces 
-    for n in range(1, 17):
+    for n in range(0, 16):
         switch_light(n, False)
 
     # Reiniciar el lights.json
@@ -111,7 +111,7 @@ def switch_light(number, state):
 
     # Leer estado actual de las luces
     if not os.path.exists('lights.json'):
-        lights = { 'light-{}'.format(n): False for n in range(1, 17) }
+        lights = { 'light-{}'.format(n): False for n in range(0, 16) }
     else:
         lights = json.load(open('lights.json'))
 

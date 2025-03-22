@@ -47,7 +47,7 @@ def light(number):
 
 def get_light_status():
     lights = {}
-    for light in range(1, 17):
+    for light in range(0, 16):
         lights['light-{}'.format(light)] = hardware.is_light_on(light)
     return lights
 
