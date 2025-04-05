@@ -5,21 +5,22 @@ from laboratory import weblab
 from weblablib import weblab_user
 import time
 
-#Mapa de los GPIO
+#Switches map
 mapa = {
     0: 2, 1: 3, 2: 4, 3: 17, 4: 27, 5: 22, 6: 10, 7: 9,
     8: 14, 9: 15, 10: 18, 11: 23, 12: 24, 13: 25, 14: 8, 15: 7
 }
+#buttons map
 botones = {
     0: 5, 1: 6, 2: 13, 3: 19, 4: 26 
 } # BTNC, BTNU, BTNL, BTNR, BTND
-# Configuracion de los GPIO
-GPIO.setmode(GPIO.BCM)  # numeracion BCM
-#Establecer pines como salida
+
+# All GPIO configuration
+GPIO.setmode(GPIO.BCM) 
+
 for pin in mapa.values():
     GPIO.setup(pin, GPIO.OUT)
 
-#BOTONES
 for pin in botones.values():
     GPIO.setup(pin, GPIO.OUT)
 
@@ -29,19 +30,19 @@ for pin in botones.values():
 def start(client_data, server_data):
     print("Initializing session for {}".format(weblab_user))
 
-    # Se repite para evitar que un usuario herede el estado de otro
+    #Again for avoid inheritance
     GPIO.setmode(GPIO.BCM)
         
     for pin in mapa.values():
         GPIO.setup(pin, GPIO.OUT)
-    #BOTONES
+    
     for pin in botones.values():
         GPIO.setup(pin, GPIO.OUT)
 
-    # Pin a 0 al inicio de la sesion
+    #GPIO to 0 at the beggining
     for pin in mapa.values():
         GPIO.setup(pin, GPIO.LOW)
-    #BOTONES
+
     for pin in botones.values():
         GPIO.setup(pin, GPIO.LOW)  
 
@@ -51,52 +52,51 @@ def dispose():
     print("Disposing session for {}".format(weblab_user))
     clean_resources()
     
-    # Limpiamos los GPIO cuando Flask se cierra
+    #Clean GPIO at the end
     GPIO.cleanup()
 
 def clean_resources():
-    print("Cleaning up resources and turning off all lights")
+    print("Cleaning up resources")
     
-    # Apagar las luces 
+    #Turn off switches
     for n in range(0, 16):
         switch_light(n, False)
 
-    # Reiniciar el lights.json
+    #Reboot json
     if os.path.exists('lights.json'):
         os.remove('lights.json')
 
 def switch_light(number, state):
     """Turns a specific light on or off and updates the hardware state"""
 
-    # Leer estado actual de las luces
+    #Read json
     if not os.path.exists('lights.json'):
         lights = { 'light-{}'.format(n): False for n in range(0, 16) }
     else:
         lights = json.load(open('lights.json'))
 
-    # Actualizar estado de las luces
+    #Update json
     lights['light-{}'.format(number)] = state
     json.dump(lights, open('lights.json', 'w'), indent=4)
 
-    # Buscar en el mapa el GPIO correspondiente
+    #Find in map the correct GPIO
     gpio_number = mapa.get(number, "invalid")
     if (gpio_number != "invalid"):
         GPIO.output(gpio_number, GPIO.HIGH if state else GPIO.LOW)
     else: 
         print("Light " + str(number) +" not GPIO mapped")
 
-#BOTONES
-def send_pulse():
-    """Envia un pulso al GPIO seleccionado"""
-    gpio_number = botones.get(0)  # BTNC
-    if gpio_number:
+#Buttons
+def send_pulse(button_id):
+    gpio_number = botones.get(button_id)
+    if gpio_number is not None:
         print("Sending pulse to GPIO", gpio_number)
         GPIO.output(gpio_number, GPIO.HIGH)
-        time.sleep(0.2)  # Mantiene el pulso por 200 ms
+        time.sleep(0.2)  #200ms pulse
         GPIO.output(gpio_number, GPIO.LOW)
         print("Pulse sent to GPIO", gpio_number)
     else:
-        print("Invalid GPIO for pulse")
+        print("Invalid button_id:", button_id)
 #
 
 def is_light_on(number):

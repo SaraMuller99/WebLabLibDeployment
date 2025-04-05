@@ -28,14 +28,14 @@
       </div>
       <br>
       
-      <!-- Temporizador -->
+      <!-- Timer -->
       <div class="row">
         <p>Time: <span id="timer"></span>.</p>
       </div>
       <br>
       
 
-      <!-- Primera fila: interruptores 0-7 -->
+      <!-- 1st row: switches 0-7 -->
       <div class="row">
         {% for light in range(0, 8) %}
         <div class="col-sm-1 text-center">
@@ -52,7 +52,7 @@
       </div>
       <br>
       
-      <!-- Segunda fila: interruptores 8-15 -->
+      <!-- 2nd row: switches 8-15 -->
       <div class="row">
         {% for light in range(8, 16) %}
         <div class="col-sm-1 text-center">
@@ -68,9 +68,64 @@
         {% endfor %}
       </div>
       <!-- BOTONES -->
-      <div class="row">
-        <button class="btn btn-primary" onclick="sendPulse()">Enviar Pulso</button>
-    </div>
+      <!-- CCS code for the graph -->
+      <style>
+        .button-dpad {
+          display: grid;
+          grid-template-columns: 60px 60px 60px;
+          grid-template-rows: 60px 60px 60px;
+          gap: 5px;
+          justify-content: center;
+          margin-top: 20px;
+        }
+      
+        .dpad-button {
+          width: 60px;
+          height: 60px;
+          font-size: 15px;
+          border-radius: 50%; 
+          border: 2px solid #333;
+          background-color: #eee;
+          cursor: pointer;
+          text-align: center;
+          vertical-align: middle;
+          line-height: 56px; 
+        }
+      
+        .up {
+          grid-column: 2;
+          grid-row: 1;
+        }
+      
+        .left {
+          grid-column: 1;
+          grid-row: 2;
+        }
+      
+        .center {
+          grid-column: 2;
+          grid-row: 2;
+        }
+      
+        .right {
+          grid-column: 3;
+          grid-row: 2;
+        }
+      
+        .down {
+          grid-column: 2;
+          grid-row: 3;
+        }
+      </style>
+      
+      <div class="button-dpad">
+        <button class="dpad-button up" onclick="sendPulse(1)">BTNU</button>
+        <button class="dpad-button left" onclick="sendPulse(2)">BTNL</button>
+        <button class="dpad-button center" onclick="sendPulse(0)">BTNC</button>
+        <button class="dpad-button right" onclick="sendPulse(3)">BTNR</button>
+        <button class="dpad-button down" onclick="sendPulse(4)">BTND</button>
+      </div>
+      
 <!-- - -->
     {% if not weblab_user.active %}
     <a href="{{ weblab_user.back }}">Back</a>
@@ -94,7 +149,6 @@
     <script>
       var STATUS_URL = "{{ url_for('status') }}";
       var LIGHT_URL = "{{ url_for('light', number=1) }}".replace("1", "%s"); 
-      var PULSE_URL = "{{ url_for('pulse') }}";  // BOTONES
     </script>
     <script src="{{ url_for('static', filename='lab.js') }}"></script>
 

@@ -19,7 +19,7 @@ function clean() {
     $("#panel").hide();
     $("#timer").text("session is over");
 }
-
+//Switches
 function parseStatus(newStatus) {
     if (newStatus.error == false) {
         for (var i = 0; i < 16; i++) { 
@@ -47,13 +47,14 @@ function parseStatus(newStatus) {
         clean();
     }
 }
-// BOTONES
-function sendPulse() {
-    var url = PULSE_URL;
+//
+// Buttons
+function sendPulse(pin_id) {
+    var url = "/pulse/" + pin_id;
     $.get(url).done(function(response) {
-        console.log(response.result);
+        console.log("Pulse sent to pin", pin_id);
     }).fail(function() {
-        console.log("Error sending pulse");
+        console.log("Error sending pulse to pin", pin_id);
     });
 }
 //

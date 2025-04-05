@@ -4,7 +4,7 @@ from weblablib import WebLab, weblab_user
 from weblablib import requires_active, requires_login
 from weblablib import poll
 
-
+#For the pulse
 import time  
 
 app = Flask(__name__)
@@ -53,12 +53,12 @@ def get_light_status():
         lights['light-{}'.format(light)] = hardware.is_light_on(light)
     return lights
 
-# BOTONES
-@app.route('/pulse/')
+# Buttons
+@app.route('/pulse/<int:pin_id>')
 @requires_active
-def pulse():
+def pulse(pin_id):
     print("[DEBUG] Received petition in /pulse/")
-    hardware.send_pulse()
+    hardware.send_pulse(pin_id)
     return jsonify(result="Pulse sent", error=False)
 #
 import hardware
