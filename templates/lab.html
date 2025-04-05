@@ -67,6 +67,10 @@
         </div>
         {% endfor %}
       </div>
+      <!-- BOTONES -->
+      <div class="row">
+        <button class="btn btn-primary" onclick="sendPulse()">Enviar Pulso</button>
+    </div>
 <!-- - -->
     {% if not weblab_user.active %}
     <a href="{{ weblab_user.back }}">Back</a>
@@ -90,6 +94,7 @@
     <script>
       var STATUS_URL = "{{ url_for('status') }}";
       var LIGHT_URL = "{{ url_for('light', number=1) }}".replace("1", "%s"); 
+      var PULSE_URL = "{{ url_for('pulse') }}";  // BOTONES
     </script>
     <script src="{{ url_for('static', filename='lab.js') }}"></script>
 

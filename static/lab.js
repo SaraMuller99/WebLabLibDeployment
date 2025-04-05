@@ -47,6 +47,16 @@ function parseStatus(newStatus) {
         clean();
     }
 }
+// BOTONES
+function sendPulse() {
+    var url = PULSE_URL;
+    $.get(url).done(function(response) {
+        console.log(response.result);
+    }).fail(function() {
+        console.log("Error sending pulse");
+    });
+}
+//
 
 var STATUS_INTERVAL = setInterval(function () {
 

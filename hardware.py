@@ -3,46 +3,27 @@ import json
 import RPi.GPIO as GPIO  # Libreria para GPIO
 from laboratory import weblab
 from weblablib import weblab_user
+import time
 
 #Mapa de los GPIO
 mapa = {
-    0: 2,
-    1: 3,
-    2: 4,
-    3: 17,
-    4: 27,
-    5: 22,
-    6: 10,
-    7: 9,
-    8: 14,
-    9: 15,
-    10: 18,
-    11: 23,
-    12: 24,
-    13: 25,
-    14: 8,
-    15: 7
+    0: 2, 1: 3, 2: 4, 3: 17, 4: 27, 5: 22, 6: 10, 7: 9,
+    8: 14, 9: 15, 10: 18, 11: 23, 12: 24, 13: 25, 14: 8, 15: 7
 }
-
+botones = {
+    0: 5, 1: 6, 2: 13, 3: 19, 4: 26 
+} # BTNC, BTNU, BTNL, BTNR, BTND
 # Configuracion de los GPIO
 GPIO.setmode(GPIO.BCM)  # numeracion BCM
 #Establecer pines como salida
-GPIO.setup(2, GPIO.OUT)
-GPIO.setup(3, GPIO.OUT)
-GPIO.setup(4, GPIO.OUT)
-GPIO.setup(17, GPIO.OUT)
-GPIO.setup(27, GPIO.OUT)
-GPIO.setup(22, GPIO.OUT)
-GPIO.setup(10, GPIO.OUT)
-GPIO.setup(9, GPIO.OUT)
-GPIO.setup(14, GPIO.OUT)
-GPIO.setup(15, GPIO.OUT)
-GPIO.setup(18, GPIO.OUT)
-GPIO.setup(23, GPIO.OUT)
-GPIO.setup(24, GPIO.OUT)
-GPIO.setup(25, GPIO.OUT)
-GPIO.setup(8, GPIO.OUT)
-GPIO.setup(7, GPIO.OUT)
+for pin in mapa.values():
+    GPIO.setup(pin, GPIO.OUT)
+
+#BOTONES
+for pin in botones.values():
+    GPIO.setup(pin, GPIO.OUT)
+
+
 
 @weblab.on_start
 def start(client_data, server_data):
@@ -50,41 +31,19 @@ def start(client_data, server_data):
 
     # Se repite para evitar que un usuario herede el estado de otro
     GPIO.setmode(GPIO.BCM)
-    
-    GPIO.setup(2, GPIO.OUT)
-    GPIO.setup(3, GPIO.OUT)
-    GPIO.setup(4, GPIO.OUT)
-    GPIO.setup(17, GPIO.OUT)
-    GPIO.setup(27, GPIO.OUT)
-    GPIO.setup(22, GPIO.OUT)
-    GPIO.setup(10, GPIO.OUT)
-    GPIO.setup(9, GPIO.OUT)
-    GPIO.setup(14, GPIO.OUT)
-    GPIO.setup(15, GPIO.OUT)
-    GPIO.setup(18, GPIO.OUT)
-    GPIO.setup(23, GPIO.OUT)
-    GPIO.setup(24, GPIO.OUT)
-    GPIO.setup(25, GPIO.OUT)
-    GPIO.setup(8, GPIO.OUT)
-    GPIO.setup(7, GPIO.OUT)
-    
+        
+    for pin in mapa.values():
+        GPIO.setup(pin, GPIO.OUT)
+    #BOTONES
+    for pin in botones.values():
+        GPIO.setup(pin, GPIO.OUT)
+
     # Pin a 0 al inicio de la sesion
-    GPIO.setup(2, GPIO.LOW)
-    GPIO.setup(3, GPIO.LOW)
-    GPIO.setup(4, GPIO.LOW)
-    GPIO.setup(17, GPIO.LOW)
-    GPIO.setup(27, GPIO.LOW)
-    GPIO.setup(22, GPIO.LOW)
-    GPIO.setup(10, GPIO.LOW)
-    GPIO.setup(9, GPIO.LOW)
-    GPIO.setup(14, GPIO.LOW)
-    GPIO.setup(15, GPIO.LOW)
-    GPIO.setup(18, GPIO.LOW)
-    GPIO.setup(23, GPIO.LOW)
-    GPIO.setup(24, GPIO.LOW)
-    GPIO.setup(25, GPIO.LOW)
-    GPIO.setup(8, GPIO.LOW)
-    GPIO.setup(7, GPIO.LOW)
+    for pin in mapa.values():
+        GPIO.setup(pin, GPIO.LOW)
+    #BOTONES
+    for pin in botones.values():
+        GPIO.setup(pin, GPIO.LOW)  
 
 
 @weblab.on_dispose
@@ -125,6 +84,20 @@ def switch_light(number, state):
         GPIO.output(gpio_number, GPIO.HIGH if state else GPIO.LOW)
     else: 
         print("Light " + str(number) +" not GPIO mapped")
+
+#BOTONES
+def send_pulse():
+    """Envia un pulso al GPIO seleccionado"""
+    gpio_number = botones.get(0)  # BTNC
+    if gpio_number:
+        print("Sending pulse to GPIO", gpio_number)
+        GPIO.output(gpio_number, GPIO.HIGH)
+        time.sleep(0.2)  # Mantiene el pulso por 200 ms
+        GPIO.output(gpio_number, GPIO.LOW)
+        print("Pulse sent to GPIO", gpio_number)
+    else:
+        print("Invalid GPIO for pulse")
+#
 
 def is_light_on(number):
     """Checks whether a light is on or off"""

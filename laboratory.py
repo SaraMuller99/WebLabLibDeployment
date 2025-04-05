@@ -5,6 +5,8 @@ from weblablib import requires_active, requires_login
 from weblablib import poll
 
 
+import time  
+
 app = Flask(__name__)
 app.config.update({
     'SECRET_KEY': 'something-random',
@@ -51,6 +53,14 @@ def get_light_status():
         lights['light-{}'.format(light)] = hardware.is_light_on(light)
     return lights
 
+# BOTONES
+@app.route('/pulse/')
+@requires_active
+def pulse():
+    print("[DEBUG] Received petition in /pulse/")
+    hardware.send_pulse()
+    return jsonify(result="Pulse sent", error=False)
+#
 import hardware
 @app.cli.command('clean-resources')
 def clean_resources_command():
