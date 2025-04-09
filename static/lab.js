@@ -58,7 +58,6 @@ function sendPulse(pin_id) {
     });
 }
 //
-
 var STATUS_INTERVAL = setInterval(function () {
 
     $.get(STATUS_URL).done(parseStatus).fail(clean);
@@ -69,3 +68,18 @@ $.get(STATUS_URL).done(parseStatus);
 
 var TIMER_INTERVAL = null;
 var TIME_LEFT = null;
+
+//Upload bitstream
+document.getElementById("bitstream-form").addEventListener("submit", async function (e) {
+    e.preventDefault();
+    const formData = new FormData(this);
+    const res = await fetch("/upload-bitstream", {
+        method: "POST",
+        body: formData
+    });
+    const data = await res.json();
+
+    const mensajeDiv = document.getElementById("mensaje-bitstream");
+    mensajeDiv.textContent = data.mensaje;
+    mensajeDiv.className = data.ok ? "alert alert-success" : "alert alert-danger";
+});

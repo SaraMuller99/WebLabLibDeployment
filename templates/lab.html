@@ -67,7 +67,7 @@
         </div>
         {% endfor %}
       </div>
-      <!-- BOTONES -->
+      <!-- BUTTONS -->
       <!-- CCS code for the graph -->
       <style>
         .button-dpad {
@@ -126,6 +126,16 @@
         <button class="dpad-button down" onclick="sendPulse(4)">BTND</button>
       </div>
       
+      <!-- UPLOAD BITSTREAM -->
+      <hr>
+      <h3>Cargar Bitstream en FPGA</h3>
+      <form id="bitstream-form" enctype="multipart/form-data">
+        <input type="file" name="bitstream" accept=".bit" required>
+        <button type="submit" class="btn btn-primary">Subir y cargar bitstream</button>
+      </form>
+      <div id="mensaje-bitstream" class="alert" style="margin-top: 10px;"></div>
+      <!-- - -->
+
 <!-- - -->
     {% if not weblab_user.active %}
     <a href="{{ weblab_user.back }}">Back</a>

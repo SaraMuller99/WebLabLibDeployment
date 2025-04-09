@@ -1,9 +1,13 @@
 import os
 import json
-import RPi.GPIO as GPIO  # Libreria para GPIO
+import RPi.GPIO as GPIO
 from laboratory import weblab
 from weblablib import weblab_user
 import time
+
+#Upload bitstream
+import subprocess
+import tempfile
 
 #Switches map
 mapa = {
@@ -105,3 +109,36 @@ def is_light_on(number):
         return False
     with open('lights.json', 'r') as file:
         return json.load(file).get("light-{}".format(number), False)
+
+#Upload bitstream
+def cargar_bitstream_en_fpga(bitstream_bytes):
+    try:
+        #Save .bit as temporal
+        with tempfile.NamedTemporaryFile(delete=False, suffix=".bit") as temp_file:
+            temp_file.write(bitstream_bytes)
+            ruta_bitstream = temp_file.name
+
+        #OpenFPGALoader command
+        comando = [
+            "/usr/local/bin/openFPGALoader",
+            "-b", "nexys_a7_100",
+            ruta_bitstream
+        ]
+
+        #Popen allows to execute commands as the OS
+        proceso = subprocess.Popen(comando, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        out, err = proceso.communicate()
+        returncode = proceso.returncode
+
+        #Delete .bit
+        os.remove(ruta_bitstream)
+
+        if returncode == 0:
+            return {"exito": True, "mensaje": "Bitstream cargado correctamente."}
+        else:
+            return {"exito": False, "mensaje": err}
+
+    except OSError:
+        return {"exito": False, "mensaje": "openFPGALoader no encontrado."}
+    except Exception as e:
+        return {"exito": False, "mensaje": "Error inesperado: {0}".format(e)}

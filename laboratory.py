@@ -65,3 +65,16 @@ import hardware
 @app.cli.command('clean-resources')
 def clean_resources_command():
     hardware.clean_resources()
+
+#Upload bitstream
+@app.route('/upload-bitstream', methods=['POST'])
+@requires_active
+def upload_bitstream():
+    bitstream = request.files.get('bitstream')
+    if not bitstream:
+        return jsonify(ok=False, mensaje="No se ha enviado un archivo .bit.")
+
+    from hardware import cargar_bitstream_en_fpga  #Import function from hardware.py
+    resultado = cargar_bitstream_en_fpga(bitstream.read())
+
+    return jsonify(ok=resultado["exito"], mensaje=resultado["mensaje"])
