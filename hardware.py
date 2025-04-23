@@ -71,7 +71,6 @@ def clean_resources():
         os.remove('lights.json')
 
 def switch_light(number, state):
-    """Turns a specific light on or off and updates the hardware state"""
 
     #Read json
     if not os.path.exists('lights.json'):

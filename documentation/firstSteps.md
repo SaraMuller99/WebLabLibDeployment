@@ -183,3 +183,4 @@ Luego podremos ejecutarlo haciendo en una consola:
    $ flask run
    ```  
 En otra consola lanzaremos nuestro *deployment* de *WebLab-Deusto*, y ya podremos acceder al laboratorio, clickar en nuestro experimento y acceder a él.
+
