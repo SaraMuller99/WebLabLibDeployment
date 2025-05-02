@@ -80,21 +80,3 @@ def upload_bitstream():
     resultado = cargar_bitstream_en_fpga(bitstream.read())
 
     return jsonify(ok=resultado["exito"], mensaje=resultado["mensaje"])
-
-#Camera
-def generar_frames():
-    while True:
-        subprocess.call(['fswebcam', '-q', '--no-banner', 'frame.jpg'])
-        with open('frame.jpg', 'rb') as f:
-            frame = f.read()
-        yield (b'--frame\r\n'
-               b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
-        time.sleep(0.1)
-
-@app.route('/video_feed')
-def video_feed():
-    return Response(generar_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
-
-@app.route('/webcam')
-def webcam():
-    return render_template('webcam.html')

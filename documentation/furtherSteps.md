@@ -23,3 +23,35 @@ Necesitamos instalar `fswebcam` en el lugar donde alojemos el laboratorio, en es
 Luego crearemos una función dentro de `laboratory.py` en la que hacemos una llamada continua a `fswebcam` y con `yield` construimos el vídeo con la secuencia de imágenes capturadas.
 ##### Conclusiones del primer planteamiento
 A pesar de lo ofertado por esta aplicación, se implementó y se comprobó que no era factible su uso, la tasa de refresco es tan baja que no se puede ver ningún cambio en la FPGA ya que pasan varios segundos entre imagen e imagen, por lo que se buscarán alternativas que permitan observar en tiempo real lo que ocurre en la FPGA.
+#### Segundo plantemiento (OpenCV)
+Como el uso de fswebcam no arrojó los resultados esperados, investigando se encuentran diferentes opciones posibles, la más recomendada en foros es hacer uso de OpenCV, el problema es que OpenCV no funciona en python 2 por lo que hay que hay que hacer uso de la aplicación en un script fuera del entorno virtual del laboratorio,ejecutar el servicio desde fuera también y luego insertar una etiqueta dentro de nuestro laboratorio. El código que hay en el script `camera.py` se adjunto aquí, pero hay que tener en cuenta, como se comentaba antes, que es un archivo que debe de ir fuera del entorno virtual en el que está `Weblablib` o en el que esta `WebLabDeusto`
+```py
+from flask import Flask, Response
+import cv2
+
+app = Flask(__name__)
+
+camera = cv2.VideoCapture(0) #Select the first camera conected
+
+def generate_frames():
+    while True:
+        success, frame = camera.read()
+        if not success:
+            break
+        ret, buffer = cv2.imencode('.jpg', frame)
+        frame = buffer.tobytes()
+        yield (b'--frame\r\n'
+               b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
+
+@app.route('/video_feed')
+def video_feed():
+    return Response(generate_frames(),
+                    mimetype='multipart/x-mixed-replace; boundary=frame')
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=5001)
+```
+
+#### Problemas asociados
+En un futuro, cuando el laboratorio sea subido a la web habrá que hacer acesible el vídeo y para ello se tendrá que decidir si se sigue haciendo uso de OpenCv combinado con otras herramientas, como por ejemplo una VPN entre servidor y Raspberry Pi o un túnel SSH. También se podría plantear enviar el vídeo en streaming a través de YouTube, esta opción no es muy privada, aunque no debería de ser un problema ya que la imagen que se retransmite no da ningún tipo de información comprometida. 
+
