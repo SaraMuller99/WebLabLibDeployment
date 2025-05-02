@@ -48,6 +48,7 @@ function parseStatus(newStatus) {
     }
 }
 //
+
 // Buttons
 function sendPulse(pin_id) {
     var url = "/pulse/" + pin_id;
@@ -58,6 +59,7 @@ function sendPulse(pin_id) {
     });
 }
 //
+
 var STATUS_INTERVAL = setInterval(function () {
 
     $.get(STATUS_URL).done(parseStatus).fail(clean);
