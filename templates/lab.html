@@ -1,177 +1,211 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Laboratorio FPGA</title>
 
-    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
-    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-    <!--[if lt IE 9]>
-      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
-      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
-    <![endif]-->
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 
-  </head>
-  <body>
+  <style>
+    body {
+      margin: 0;
+      padding: 20px;
+      background-color: #d4d3d3;
+      box-sizing: border-box;
+    }
 
+    .main-layout {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 20px;
+    }
 
-    <div class="container">
-      <div class="row">
-        <h1>Bienvenido a la fase beta del <strong>nuevo laboratorio de FPGA's</strong>!</h1>
-      </div>
+    .left-column, .right-column {
+      flex: 1;
+      min-width: 320px;
+    }
 
-      <div class="row">
-        <h2>Switches: Pulsa los switches para cambiar el estado de los interruptores de la FPGA</h2>
-      </div>
-      <br>
-      
+    .webcam {
+      text-align: center;
+    }
+
+    .webcam img {
+      width: 100%;
+      max-width: 480px;
+      height: auto;
+      border-radius: 10px;
+    }
+
+    .timer {
+      font-size: 18px;
+      margin-bottom: 15px;
+    }
+
+    .bitstream-form {
+      margin-bottom: 5px;
+    }
+
+    .bitstream-form h3 {
+      margin-bottom: 5px !important;
+    }
+
+    .switches-row:first-of-type {
+      margin-top: 5px !important;
+    }
+
+    .bitstream-form input[type="file"] {
+      display: block;
+      margin-bottom: 10px;
+    }
+
+    .switches-row {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+
+    .switch {
+      width: 50px;
+      text-align: center;
+    }
+
+    .switch img {
+      width: 100%;
+      height: auto;
+    }
+
+    .dpad {
+      display: grid;
+      grid-template-columns: 50px 50px 50px;
+      grid-template-rows: 50px 50px 50px;
+      gap: 5px;
+      justify-content: center;
+      margin: 0 auto;
+      margin-top: 5px;
+    }
+
+    .dpad-button {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      border: 2px solid #333;
+      background-color: #ffffff;
+      cursor: pointer;
+      text-align: center;
+      line-height: 46px;
+      font-size: 12px;
+    }
+
+    .up { grid-column: 2; grid-row: 1; }
+    .left { grid-column: 1; grid-row: 2; }
+    .center { grid-column: 2; grid-row: 2; }
+    .right { grid-column: 3; grid-row: 2; }
+    .down { grid-column: 2; grid-row: 3; }
+
+    h1, h2, h3 {
+      margin-top: 0;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="presentation" class ="presentation">
+    <h1>Bienvenido a la fase beta del <strong>nuevo laboratorio de FPGA's</strong>!</h1>
+    <h2>Selecciona tu .bit, súbelo a la FPGA y prueba su funcionamiento con los botones y switches</h2>
+  </div>
+  <!-- Laboratory closed -->
+  <div id="timeout-message" class="alert alert-danger text-center" style="display: none; margin-top: 20px;">
+    ¡Tu tiempo ha terminado! Por favor, abandona el laboratorio.
+  </div>
+
+  <div id="main-layout" class="main-layout">
+    <!-- Left column: Webcam -->
+    <div class="left-column webcam">
+      <h3>Webcam en directo</h3>
+      <img src="http://localhost:5001/video_feed" alt="Camera">
+    </div>
+
+    <!-- Right column: time, switches and buttons -->
+    <div class="right-column">
       <!-- Timer -->
-      <div class="row">
-        <p>Time: <span id="timer"></span>.</p>
+      <div class="timer">
+        <strong>Time:</strong> <span id="timer">00:00</span>
       </div>
-      <br>
-    
-    <!-- Camera-->
-      <!doctype html>
-      <html>
-      <body>
-        <h3>Webcam en directo</h3>
-        <img src="http://localhost:5001/video_feed" width="480" height="360">
-      </body>
-      </html>
 
+      <!-- Upload bitstream -->
+      <div class="bitstream-form">
+        <h3>Cargar Bitstream</h3>
+        <form id="bitstream-form" enctype="multipart/form-data">
+          <input type="file" name="bitstream" accept=".bit" required>
+          <button type="submit" class="btn btn-primary btn-sm">Subir y cargar bitstream</button>
+        </form>
+        <div id="bitstream-message" class="alert" style="margin-top: 10px;"></div>
+      </div>
 
-      <!-- 1st row: switches 0-7 -->
-      <div class="row">
+      <!-- Switches 0-7 -->
+      <div class="switches-row">
         {% for light in range(0, 8) %}
-        <div class="col-sm-1 text-center">
+        <div class="switch">
           sw{{ light }}
           <br>
           <a href="javascript:turnOff({{ light }})">
-            <img width="50px" id="light_{{ light }}_on" src="{{ url_for('static', filename='imagenes/on.png') }}">
+            <img id="light_{{ light }}_on" src="{{ url_for('static', filename='imagenes/on.png') }}">
           </a>
           <a href="javascript:turnOn({{ light }})">
-            <img width="50px" id="light_{{ light }}_off" src="{{ url_for('static', filename='imagenes/off.png') }}">
+            <img id="light_{{ light }}_off" src="{{ url_for('static', filename='imagenes/off.png') }}">
           </a>
         </div>
         {% endfor %}
       </div>
-      <br>
-      
-      <!-- 2nd row: switches 8-15 -->
-      <div class="row">
+
+      <!-- Switches 8-15 -->
+      <div class="switches-row">
         {% for light in range(8, 16) %}
-        <div class="col-sm-1 text-center">
+        <div class="switch">
           sw{{ light }}
           <br>
           <a href="javascript:turnOff({{ light }})">
-            <img width="50px" id="light_{{ light }}_on" src="{{ url_for('static', filename='imagenes/on.png') }}">
+            <img id="light_{{ light }}_on" src="{{ url_for('static', filename='imagenes/on.png') }}">
           </a>
           <a href="javascript:turnOn({{ light }})">
-            <img width="50px" id="light_{{ light }}_off" src="{{ url_for('static', filename='imagenes/off.png') }}">
+            <img id="light_{{ light }}_off" src="{{ url_for('static', filename='imagenes/off.png') }}">
           </a>
         </div>
         {% endfor %}
       </div>
-      <!-- BUTTONS -->
-      <!-- CCS code for the graph -->
-      <style>
-        .button-dpad {
-          display: grid;
-          grid-template-columns: 60px 60px 60px;
-          grid-template-rows: 60px 60px 60px;
-          gap: 5px;
-          justify-content: center;
-          margin-top: 20px;
-        }
-      
-        .dpad-button {
-          width: 60px;
-          height: 60px;
-          font-size: 15px;
-          border-radius: 50%; 
-          border: 2px solid #333;
-          background-color: #eee;
-          cursor: pointer;
-          text-align: center;
-          vertical-align: middle;
-          line-height: 56px; 
-        }
-      
-        .up {
-          grid-column: 2;
-          grid-row: 1;
-        }
-      
-        .left {
-          grid-column: 1;
-          grid-row: 2;
-        }
-      
-        .center {
-          grid-column: 2;
-          grid-row: 2;
-        }
-      
-        .right {
-          grid-column: 3;
-          grid-row: 2;
-        }
-      
-        .down {
-          grid-column: 2;
-          grid-row: 3;
-        }
-      </style>
-      
-      <div class="button-dpad">
+
+      <!-- Buttons -->
+      <div class="dpad">
         <button class="dpad-button up" onclick="sendPulse(1)">BTNU</button>
         <button class="dpad-button left" onclick="sendPulse(2)">BTNL</button>
         <button class="dpad-button center" onclick="sendPulse(0)">BTNC</button>
         <button class="dpad-button right" onclick="sendPulse(3)">BTNR</button>
         <button class="dpad-button down" onclick="sendPulse(4)">BTND</button>
       </div>
-      
-      <!-- UPLOAD BITSTREAM -->
-      <hr>
-      <h3>Cargar Bitstream en FPGA</h3>
-      <form id="bitstream-form" enctype="multipart/form-data">
-        <input type="file" name="bitstream" accept=".bit" required>
-        <button type="submit" class="btn btn-primary">Subir y cargar bitstream</button>
-      </form>
-      <div id="mensaje-bitstream" class="alert" style="margin-top: 10px;"></div>
-      <!-- - -->
-
-<!-- - -->
-    {% if not weblab_user.active %}
-    <a href="{{ weblab_user.back }}">Back</a>
-
-    {# ... #}
-
-    <div class="alert alert-warning">
-        <h1>You don't have access to the laboratory anymore but
-        you can download the following resources</h1>
-
-        {# ... #}
     </div>
-    {% endif %}
-<!-- - -->
-    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-    <!-- Include all compiled plugins (below), or include individual files as needed -->
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+  </div>
 
-    <!-- Here we will have the scripts -->
-    <script>
-      var STATUS_URL = "{{ url_for('status') }}";
-      var LIGHT_URL = "{{ url_for('light', number=1) }}".replace("1", "%s"); 
-    </script>
-    <script src="{{ url_for('static', filename='lab.js') }}"></script>
+  {% if not weblab_user.active %}
+    <a href="{{ weblab_user.back }}">Back</a>
+    <div class="alert alert-warning">
+      <h1>You don't have access to the laboratory anymore but you can download the following resources</h1>
+    </div>
+  {% endif %}
 
-    {{ weblab_poll_script() }}
+  <!-- Scripts -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 
-  </body>
+  <script>
+    var STATUS_URL = "{{ url_for('status') }}";
+    var LIGHT_URL = "{{ url_for('light', number=1) }}".replace("1", "%s");
+  </script>
+  <script src="{{ url_for('static', filename='lab.js') }}"></script>
+  {{ weblab_poll_script() }}
+</body>
 </html>

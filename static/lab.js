@@ -13,11 +13,16 @@ function turnLight(num, state) {
     $.get(url).done(parseStatus);
 }
 
+//Clean the laborarory once the sesion is over
 function clean() {
 	clearInterval(STATUS_INTERVAL);
-	clearInterval(TIME_LEFT);
+	clearInterval(TIMER_INTERVAL);
     $("#panel").hide();
-    $("#timer").text("session is over");
+    $("#timer").text("Session is over");
+
+    document.getElementById("main-layout").style.display = "none";
+    document.getElementById("presentation").style.display = "none";
+    document.getElementById("timeout-message").style.display = "block";
 }
 //Switches
 function parseStatus(newStatus) {
@@ -81,7 +86,7 @@ document.getElementById("bitstream-form").addEventListener("submit", async funct
     });
     const data = await res.json();
 
-    const mensajeDiv = document.getElementById("mensaje-bitstream");
+    const mensajeDiv = document.getElementById("bitstream-message");
     mensajeDiv.textContent = data.mensaje;
     mensajeDiv.className = data.ok ? "alert alert-success" : "alert alert-danger";
 });
