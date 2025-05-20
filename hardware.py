@@ -1,3 +1,5 @@
+#--------------------------Interaction with the FPGA--------------------------
+
 import os
 import json
 import RPi.GPIO as GPIO
@@ -5,53 +7,51 @@ from laboratory import weblab
 from weblablib import weblab_user
 import time
 
-#Upload bitstream
+#Stuff for upload bitstream
 import subprocess
 import tempfile
 
+#MAPS: Define the GPIO port
 #Switches map
-mapa = {
+switches = {
     0: 2, 1: 3, 2: 4, 3: 17, 4: 27, 5: 22, 6: 10, 7: 9,
     8: 14, 9: 15, 10: 18, 11: 23, 12: 24, 13: 25, 14: 8, 15: 7
 }
-#buttons map
-botones = {
+#Buttons map
+buttons = {
     0: 5, 1: 6, 2: 13, 3: 19, 4: 26 
-} # BTNC, BTNU, BTNL, BTNR, BTND
+#   BTNC  BTNU  BTNL   BTNR   BTND
+} 
 
-# All GPIO configuration
+#GPIO CONFIGURATION
+#GPIO numeration not pin numeration
 GPIO.setmode(GPIO.BCM) 
-
-for pin in mapa.values():
+#Establish gpio's as output 
+for pin in switches.values():
+    GPIO.setup(pin, GPIO.OUT)
+for pin in buttons.values():
     GPIO.setup(pin, GPIO.OUT)
 
-for pin in botones.values():
-    GPIO.setup(pin, GPIO.OUT)
-
-
-
-@weblab.on_start
+#START CONFIGURATION
+@weblab.on_start #Decorator that makes the function to be execute at the begining of execution
 def start(client_data, server_data):
     print("Initializing session for {}".format(weblab_user))
 
     #Again for avoid inheritance
-    GPIO.setmode(GPIO.BCM)
-        
-    for pin in mapa.values():
+    GPIO.setmode(GPIO.BCM)  
+    for pin in switches.values():
         GPIO.setup(pin, GPIO.OUT)
-    
-    for pin in botones.values():
+    for pin in buttons.values():
         GPIO.setup(pin, GPIO.OUT)
 
     #GPIO to 0 at the beggining
-    for pin in mapa.values():
+    for pin in switches.values():
         GPIO.setup(pin, GPIO.LOW)
-
-    for pin in botones.values():
+    for pin in buttons.values():
         GPIO.setup(pin, GPIO.LOW)  
 
-
-@weblab.on_dispose
+#END CONFIGURATION
+@weblab.on_dispose #Decorator that makes the function to be execute at the end of execution or reload
 def dispose():
     print("Disposing session for {}".format(weblab_user))
     clean_resources()
@@ -64,34 +64,45 @@ def clean_resources():
     
     #Turn off switches
     for n in range(0, 16):
-        switch_light(n, False)
+        switch_switches(n, False)
 
     #Reboot json
-    if os.path.exists('lights.json'):
-        os.remove('lights.json')
+    if os.path.exists('switches.json'):
+        os.remove('switches.json')
 
-def switch_light(number, state):
+#TURN ON AND OFF SWITCHES
+#Use a json file to know the state of the switch and turn it on or off
+def switch_switches(number, state):
 
     #Read json
-    if not os.path.exists('lights.json'):
-        lights = { 'light-{}'.format(n): False for n in range(0, 16) }
+    if not os.path.exists('switches.json'):
+        sw = { 'switch-{}'.format(n): False for n in range(0, 16) }
     else:
-        lights = json.load(open('lights.json'))
+        sw = json.load(open('switches.json'))
 
     #Update json
-    lights['light-{}'.format(number)] = state
-    json.dump(lights, open('lights.json', 'w'), indent=4)
+    sw['switch-{}'.format(number)] = state
+    json.dump(sw, open('switches.json', 'w'), indent=4)
 
     #Find in map the correct GPIO
-    gpio_number = mapa.get(number, "invalid")
+    gpio_number = switches.get(number, "invalid")
     if (gpio_number != "invalid"):
         GPIO.output(gpio_number, GPIO.HIGH if state else GPIO.LOW)
     else: 
-        print("Light " + str(number) +" not GPIO mapped")
+        print("switch " + str(number) +" not GPIO mapped")
+#Get the switch state
+def is_switch_on(number):
+    
+    if not os.path.exists('switches.json'):
+        return False
+    with open('switches.json', 'r') as file:
+        return json.load(file).get("switch-{}".format(number), False)
 
-#Buttons
+#BUTTONS
+#Simulate the button by sending a limited pulse
 def send_pulse(button_id):
-    gpio_number = botones.get(button_id)
+
+    gpio_number = buttons.get(button_id)
     if gpio_number is not None:
         print("Sending pulse to GPIO", gpio_number)
         GPIO.output(gpio_number, GPIO.HIGH)
@@ -100,17 +111,11 @@ def send_pulse(button_id):
         print("Pulse sent to GPIO", gpio_number)
     else:
         print("Invalid button_id:", button_id)
-#
 
-def is_light_on(number):
-    """Checks whether a light is on or off"""
-    if not os.path.exists('lights.json'):
-        return False
-    with open('lights.json', 'r') as file:
-        return json.load(file).get("light-{}".format(number), False)
 
-#Upload bitstream
-def cargar_bitstream_en_fpga(bitstream_bytes):
+#UPLOAD BITSTREAM
+#Use https://trabucayre.github.io/openFPGALoader/ to uplode the bitstream faster without vivado
+def upload_bitstream(bitstream_bytes):
     try:
         #Save .bit as temporal
         with tempfile.NamedTemporaryFile(delete=False, suffix=".bit") as temp_file:
@@ -129,7 +134,7 @@ def cargar_bitstream_en_fpga(bitstream_bytes):
         out, err = proceso.communicate()
         returncode = proceso.returncode
 
-        #Delete .bit
+        #Delete .bit to save space
         os.remove(ruta_bitstream)
 
         if returncode == 0:

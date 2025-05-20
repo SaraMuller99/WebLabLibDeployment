@@ -18,7 +18,7 @@ El desarrollo del laboratorio remoto con WebLabLib se organiza en distintas etap
 │── 📄 `laboratory.py` → Configuración de la aplicación Flask  
 │── 📁 `templates/` → Archivos HTML para la interfaz  
 │── 📁 `static/` → Archivos JavaScript y CSS para interacción  
-│── 📄 `lights.json` → Archivo para almacenar el estado de las luces  
+│── 📄 `switches.json` → Archivo para almacenar el estado de las luces  
 
 En este primer acercamiento crearemos los documentos necesarios para tener un experimento simple y funcional y familiarizarnos con el entorno, una vez tengamos esto iremos haciendo las modificaciones pertinentes para poder alcanzar nuestro objetivo final: Un laboratorio virtual de FPGA que nos permite cargar un bitstream e interactuar con ella.
 
