@@ -56,11 +56,11 @@ $ weblab-admin create example
 Una vez configurado el laboratorio debe ser añadido al *deployment* de **WebLab**, para ello lo único que tenemos que hacer es: 
 
 1. Modificar el archivo `configuration.yml` para vincular nuestro experimento al laboratorio: 
-```py
+```yml 
     electronics:
             class: experiments.http_experiment.HttpExperiment
             config:
-              http_experiment_url: http://localhost:5000/ # dirección del laboratorio
+              http_experiment_url: http://localhost:5000/ # dirección del experimento
               http_experiment_username: weblabdeusto # WEBLAB_USERNAME
               http_experiment_password: secret # WEBLAB_PASSWORD
             type: experiment
