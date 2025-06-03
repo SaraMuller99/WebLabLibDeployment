@@ -1,5 +1,14 @@
 #-----------------------------------Backend----------------------------------- 
 
+#CONFIGURATION FILE
+import ConfigParser as configparser
+import os
+
+CONFIG_PATH= os.path.expanduser('~/shared-config/config.ini')
+config = configparser.ConfigParser()
+config.read(CONFIG_PATH)
+
+
 from flask import Flask, request, render_template, jsonify, url_for, Response
 
 from weblablib import WebLab, weblab_user
@@ -11,8 +20,8 @@ app = Flask(__name__)
 app.config.update({
     'SECRET_KEY': 'something-random',
     'WEBLAB_CALLBACK_URL': '/mycallback',
-    'WEBLAB_USERNAME': 'weblabdeusto',
-    'WEBLAB_PASSWORD': 'secret',
+    'WEBLAB_USERNAME': config.get('WEBLAB', 'username'),
+    'WEBLAB_PASSWORD': config.get('WEBLAB', 'password'),
     'WEBLAB_AUTOPOLL': 'False',
 })
 #WebLab object instance
@@ -26,7 +35,7 @@ def initial_url():
 @app.route('/')
 @requires_login
 def index():
-    return render_template("lab.html")
+    return render_template(config.get('TEMPLATE', 'html'),)
 
 #Shows status: Switches and time left
 @app.route('/status')
