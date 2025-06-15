@@ -14,7 +14,7 @@ Se ha creado un archivo de configuración `config.ini` para no tener que modific
 ```
 El otro archivo que encontramos es un script en python auxiliar necesario para poder modificar los parámetros de configuration.yml ya que no es posible importar un módulo en este tipo de archivos, el formato YAML es una estructura de datos estática que no tiene capacidad para ejecutar python, importar o leer otros archivos por sí mismo.
 
-También se ha readcreado el bash script `run_all.sh`, este se encarga de ejecutar una serie de comandos por consola que permiten poder realizar las ejecuciones de los despliegues de WeblabDeusto y WebLabLib en cada uno de sus entornos virtuales y de la cámara del laboratorio por separado, en una terminal distinta cada uno, pero sin necesidad de ir manualmente uno por uno. También se encarga de ejecutar el scrit en Python responsable de actualizar `configuration.yml`, acción que evidentementerealiza previamente a lanzar los despliegues.
+También se ha creado el bash script `run_all.sh`, este se encarga de ejecutar una serie de comandos por consola que permiten poder realizar las ejecuciones de los despliegues de WeblabDeusto y WebLabLib en cada uno de sus entornos virtuales y de la cámara del laboratorio por separado, en una terminal distinta cada uno, pero sin necesidad de ir manualmente uno por uno. También se encarga de ejecutar el script en Python responsable de actualizar `configuration.yml`, acción que evidentemente realiza previamente a lanzar los despliegues.
 
 A continuación se adjuntan los códigos de estos nuevos archivos:
 

@@ -56,6 +56,13 @@ def dispose():
     print("Disposing session for {}".format(weblab_user))
     clean_resources()
     
+    bitstream_path = "/home/sara/FPGALoader-stuff/clean.bit"
+    if os.path.exists(bitstream_path):
+        result= upload_bitstream_from_path(bitstream_path)
+        print("Resultado:", result)
+    else:
+        print("Bitstream no encontrado en:", bitstream_path)
+
     #Clean GPIO at the end
     GPIO.cleanup()
 
@@ -146,3 +153,21 @@ def upload_bitstream(bitstream_bytes):
         return {"exito": False, "mensaje": "openFPGALoader no encontrado."}
     except Exception as e:
         return {"exito": False, "mensaje": "Error inesperado: {0}".format(e)}
+
+def upload_bitstream_from_path(path):
+    try:
+        comando = [
+            "/usr/local/bin/openFPGALoader",
+            "-b", "nexys_a7_100",
+            path
+        ]
+        proceso = subprocess.Popen(comando, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        out, err = proceso.communicate()
+        returncode = proceso.returncode
+
+        if returncode == 0:
+            return {"exito": True, "mensaje": "Bitstream cargado correctamente."}
+        else:
+            return {"exito": False, "mensaje": err.decode()}
+    except Exception as e:
+        return {"exito": False, "mensaje": "Error inesperado: {}".format(str(e))}
