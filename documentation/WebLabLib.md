@@ -68,9 +68,19 @@ Finalmente se ha optado por implementar dentro del experimento el script externo
 
 ### Implementación de la cámara en directo
 Se comparan diferentes posibilidades para implementar una cámara en directo en una página web y finalmente se encuentra OpenCV, el problema es que OpenCV no funciona en python 2 por lo que hay que hay que hacer uso de la aplicación en un script fuera del entorno virtual del laboratorio, ejecutar el servicio desde fuera también y luego insertar una etiqueta dentro de nuestro laboratorio. El código que hay en el script `camera.py` se adjunta aquí, pero hay que tener en cuenta, como se comentaba antes, que es un archivo que debe de ir fuera del entorno virtual en el que está `Weblablib` o en el que esta `WebLabDeusto`
+
+En esta nueva versión se modifica camerta.py para que pueda ser ejecutado en red local
 ```py
 from flask import Flask, Response
 import cv2
+
+#CONFIGURATION FILE
+import configparser as configparser
+import os
+
+CONFIG_PATH= os.path.expanduser('~/shared-config/config.ini')
+config = configparser.ConfigParser()
+config.read(CONFIG_PATH)
 
 app = Flask(__name__)
 
@@ -92,7 +102,7 @@ def video_feed():
                     mimetype='multipart/x-mixed-replace; boundary=frame')
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5001)
+    app.run(host=config.get('CAMERA', 'host'), port=config.get('CAMERA', 'port'))
 ```
 
 #### Problemas asociados

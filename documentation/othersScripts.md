@@ -25,10 +25,15 @@ username = weblabdeusto
 password = secret
 
 [EXPERIMENT]
-url = http://localhost:5000
+url = http://192.168.1.143:5000
 
 [TEMPLATE]
 html = lab.html
+
+[CAMERA]
+host = 192.168.1.143
+port= 5001
+
 ```
 ## update_yml.py
 ``` py
@@ -63,6 +68,7 @@ with open(yml_path, 'w') as f:
 print("configuration.yml update from  config.ini.")
 ```
 ## run_all.sh
+En esta nueva versión, se modifica cómo se lanza WebLabLib para que se pueda ejecutar en red local
 ``` sh
 #!/bin/bash
 
@@ -79,7 +85,7 @@ lxterminal --title="WeblabCamera" --working-directory=/home/sara/WeblabCamera \
 
 # --- WebLabLib app ---
 lxterminal --title="WebLabLib" --working-directory=/home/sara/weblablib-stuff \
-  --command="bash -c 'source /home/sara/.virtualenvs/weblablib/bin/activate && export FLASK_DEBUG=1 && export FLASK_APP=laboratory.py && flask run; exec bash'" &
+  --command="bash -c 'source /home/sara/.virtualenvs/weblablib/bin/activate && export FLASK_DEBUG=1&& export FLASK_APP=laboratory.py && flask run --host=192.168.1.143 --port=5000; exec bash'" &
 
 echo "Todas las 'aplicaciones' lanzadas"
 
